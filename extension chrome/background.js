@@ -1,9 +1,5 @@
-// const { getDomain } = require('tldjs');
-// const {parse} = require('acorn-loose')
-// importScripts('acorn-loose.js','tldjs.js');
-import { getDomain } from 'tldjs';
-// const { getDomain } = require('tldjs');
 
+import { getDomain } from 'tldjs';
 
 let start_rule_num=10;
 let top_level_domain='';
@@ -13,11 +9,7 @@ let messageQueue = [];
 let time_dict={};
 let ext_time=[];
 let inf_time=[];
-// let tdnlog=[];
-// let urllog=[];
-// let typelog=[];
-// let predlog=[];
-// let predandfeat=[];
+
 let toggle=true;
 
 function treewalk(node){
@@ -191,17 +183,6 @@ async function processNextMessage() {
           }
         }
       }
-
-      // predandfeat.push({"pred":pred, "url":url,"feat":payload});
-      // console.log(predandfeat);
-      // tdnlog.push(tld);
-      // urllog.push(url);
-      // typelog.push(ct);
-      // predlog.push(pred);  
-      // if(ct=='xmlhttprequest'){
-      //   console.log(pred, url);
-      // }
-      // console.log(pred, url);
       
     });
     await messageQueue.shift();
@@ -498,11 +479,7 @@ function getRAWREQ(url, meth, header) {
         headers:send_header
       }); 
     }
-    // response= await fetch(my_request)
-    // if(response.ok){
-    //   data=await response.text().toString();
-    //   return data;
-    // }
+  
     return new Promise((resolve) => {
       fetch(my_request)
         .then(response => {
@@ -543,18 +520,7 @@ chrome.runtime.onInstalled.addListener(async()=>{
       ext_time=[];
       inf_time=[];
     } 
-    // if(request.action=='timelog'){
-      
-    //   // await sendResponse({"val":predandfeat});
-    //   // predandfeat=[];
-    //   // console.log(tdnlog,urllog,typelog,predlog);
-    //   await sendResponse({"tdn":tdnlog, "url":urllog,"type":typelog,"pred":predlog});
-    //   tdnlog=[];
-    //   urllog=[];
-    //   typelog=[];
-    //   predlog=[];
-    //   flushDynamicRules();
-    //   }
+  
   });
 
   fetch('fqdnwordvec.json')
@@ -577,35 +543,6 @@ chrome.runtime.onInstalled.addListener(async()=>{
       });
   });
   await setupOffscreenDocument('offscreen.html');
-
-  // chrome.webNavigation.onBeforeNavigate.addListener(function(details){
-  //   chrome.tabs.query({currentWindow:true, active: true},function(){
-  //     if(details.frameId==0){
-        
-  //       blocked_url_numbers=0;
-  //       console.log("Set block count to 0");
-  //       console.log("Start");
-  //       top_level_domain='';
-  //       tdnlog=[];
-  //       urllog=[];
-  //       typelog=[];
-  //       predlog=[];
-  //     }  
-  //   });
-  // });
-
-  // chrome.tabs.onUpdated.addListener(
-  //   function(tabId, changeInfo, tab){
-  //       if(changeInfo.status=="complete"&&tab.active&&pagestart>0){
-  //           loadtime=Date.now()-pagestart;
-  //           pagestart=0;
-  //           console.log("Complete",loadtime);
-  //       }
-  //   }
-  // );
-
-
-  // flushDynamicRules();
 
   chrome.storage.sync.get({"toggle":true},function(res){
     toggle=res.toggle;
@@ -694,13 +631,6 @@ function addDynamicRule(option, ruleID, urlFilter){
     }
   );
 }
-
-// chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((response)=> {
-  
-//   if(response.rule.rulesetId=='_dynamic'){
-//     console.log("Blocked with ",response.rule.ruleId, response.request.url)
-//   }
-// });
 
 function flushDynamicRules(){
   chrome.declarativeNetRequest.getDynamicRules({},function(rules){

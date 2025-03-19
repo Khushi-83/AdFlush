@@ -41,13 +41,14 @@
     "type":"module"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' 'wasm-unsafe-eval'; object-src 'self' 'wasm-unsafe-eval';"
-  },
+  "extension_pages": "script-src 'self' 'wasm-unsafe-eval' blob:; worker-src 'self' 'wasm-unsafe-eval' blob:; object-src 'self' 'wasm-unsafe-eval';"
+},
   "web_accessible_resources": [
-    {
-      "resources":["AdFlush.onnx","*.wasm"],
-      "extension_ids":["mmfdlpolhijhdchdnkibdfhanllfkife"]
-    }
-  ]
+  {
+    "resources": ["AdFlush.onnx", "*.wasm", "scripts/my-script.js"],
+    "extension_ids": ["mmfdlpolhijhdchdnkibdfhanllfkife"]
+  }
+]
+
 
 }

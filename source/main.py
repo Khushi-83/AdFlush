@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+
 from scipy.stats import pearsonr, spearmanr, pointbiserialr
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -105,9 +106,41 @@ def main(program, argv):
     
 def feature_engineering():
     print("[[Feature engineering process of AdFlush]]")
-    train_df = pd.read_csv(os.path.join(DATADIR,"all_df_883_train.csv"), index_col=0)
-    train_df.drop(columns=['visit_id','name'], inplace=True)
-    
+    try:
+        print("Loading data in chunks...")
+        chunk_size = 10000  # Adjust the chunk size as needed
+        chunk_list = []
+
+        for chunk in pd.read_csv(os.path.join(DATADIR, "all_df_883_train.csv"), index_col=0, chunksize=chunk_size):
+            try:
+                chunk.drop(columns=['visit_id', 'name'], inplace=True)
+
+                # Check unique values in 'content_policy_type' before processing
+                unique_values = chunk['content_policy_type'].unique()
+                print(f"Unique values in 'content_policy_type': {unique_values}")
+
+                # Identify and replace non-numeric values using a dictionary
+                content_dict = {
+                    "type1": 1,
+                    "type2": 2,
+                    "type3": 3,
+                    # Add more mappings as needed
+                }
+
+                # Map known types to numbers, and replace unknown ones with -1
+                chunk['content_policy_type'] = chunk['content_policy_type'].map(content_dict).fillna(-1)
+
+                chunk_list.append(chunk)
+            except Exception as e:
+                print(f"An error occurred while processing a chunk: {e}")
+
+        train_df = pd.concat(chunk_list, ignore_index=True)
+        print("Data loading and cleaning complete.")
+        print("Final shape of training data:", train_df.shape)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
     with open(os.path.join('json','content_type_dict.json'),'r') as cjson:
         content_dict=json.loads(cjson.read())
         train_df['content_policy_type']=train_df['content_policy_type'].apply(lambda x: content_dict[x])
@@ -505,7 +538,7 @@ def trainGAN(model):
         feature_set=features['feature_columns_webgraph']
         
     print("Loading features...")
-    dataset=pd.read_csv(os.path.join(DATADIR, 'all_df_883_test.csv'),index_col=0)
+    dataset=pd.read_csv(os.path.join(DATADIR, 'all_df_883_test.csv'), dtype=np.float32, index_col=0).astype(pd.SparseDtype("float", np.nan))
     X=dataset[feature_set]
     y = dataset.label
     X_train, X_test, y_train, y_test = train_test_split(X, y, shuffle=True, test_size=0.2, random_state=42)
